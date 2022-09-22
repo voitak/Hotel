@@ -6,6 +6,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -16,6 +17,10 @@ namespace Hotel
         public RegisterForm()
         {
             InitializeComponent();
+
+            this.ActiveControl = RegTextLabel;
+
+            RegTextLabel.ForeColor = Color.FromArgb(171, 144, 84);
 
             RegNameTextBox.Text = "Имя";
             RegLastnameTextBox.Text = "Фамилия";
@@ -36,7 +41,7 @@ namespace Hotel
 
         private void CloseLabel_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Application.Exit();
         }
 
         Point lastPoint;
@@ -197,26 +202,92 @@ namespace Hotel
             }
         }
 
+        //Регистрация пользователя
         private void RegButton_Click(object sender, EventArgs e)
         {
-            if ((RegLoginTextBox.Text == "" || RegLoginTextBox.Text == "Логин")
-                || (RegPasswordTextBox.Text == "" || RegPasswordTextBox.Text == "Пароль")
-                || (RegNameTextBox.Text == "" || RegNameTextBox.Text == "Имя")
-                || (RegLastnameTextBox.Text == "" || RegLastnameTextBox.Text == "Фамилия")
-                || (RegMailTextBox.Text == "" || RegMailTextBox.Text == "Почта")
-                || (RegPhoneTextBox.Text == "" || RegPhoneTextBox.Text == "Телефон"))
+
+            #region Проверка на корректность введеных данных
+
+            if (RegNameTextBox.ForeColor == Color.Gray)
             {
-                MessageBox.Show("Введите данные");
+                ErrorProvider.SetError(RegNameTextBox, "Введите имя!");
                 return;
             }
-            
-            if(isUserExists())
+            else
+            {
+                ErrorProvider.Clear();
+            }
+
+            if (RegLastnameTextBox.ForeColor == Color.Gray)
+            {
+                ErrorProvider.SetError(RegLastnameTextBox, "Введите фамилию!");
+                return;
+            }
+            else
+            {
+                ErrorProvider.Clear();
+            }
+
+            if (RegLoginTextBox.ForeColor == Color.Gray)
+            {
+                ErrorProvider.SetError(RegLoginTextBox, "Введите логин!");
+                return;
+            }
+            else
+            {
+                ErrorProvider.Clear();
+            }
+
+            if (RegMailTextBox.ForeColor == Color.Gray)
+            {
+                ErrorProvider.SetError(RegMailTextBox, "Введите почту!");
+                return;
+            }
+            else
+            {
+                ErrorProvider.Clear();
+            }
+
+            if (RegPhoneTextBox.ForeColor == Color.Gray)
+            {
+                ErrorProvider.SetError(RegPhoneTextBox, "Введите телефон!");
+                return;
+            }
+            else
+            {
+                ErrorProvider.Clear();
+            }
+
+            if (RegPasswordTextBox.ForeColor == Color.Gray)
+            {
+                ErrorProvider.SetError(RegPasswordTextBox, "Введите пароль!");
+                return;
+            }
+            else
+            {
+                ErrorProvider.Clear();
+            }
+
+            string pattern = "^([0-9a-zA-Z]([-\\.\\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\\w]*[0-9a-zA-Z]\\.)+[a-zA-Z]{2,9})$";
+            if (Regex.IsMatch(RegMailTextBox.Text, pattern))
+            {
+                ErrorProvider.Clear();
+            }    
+            else
+            {
+                ErrorProvider.SetError(RegMailTextBox, "Введите корректную почту!");
+                return;
+            }
+
+            #endregion
+
+            if (isUserExists())
             {
                 return;
             }
 
             DB db = new DB();
-            MySqlCommand command = new MySqlCommand("INSERT INTO `users` (`login`, `password`, `name`, `lastname`, `mail`, `phone`) VALUES (@login, @password, @name, @lastname, @mail, @phone)", db.getConnection());
+            MySqlCommand command = new MySqlCommand("INSERT INTO `users` (`login`, `password`, `name`, `lastname`, `mail`, `phone`, `type`) VALUES (@login, @password, @name, @lastname, @mail, @phone, @ty)", db.getConnection());
 
             command.Parameters.Add("@login", MySqlDbType.VarChar).Value = RegLoginTextBox.Text;
             command.Parameters.Add("@password", MySqlDbType.VarChar).Value = RegPasswordTextBox.Text;
@@ -224,19 +295,34 @@ namespace Hotel
             command.Parameters.Add("@lastname", MySqlDbType.VarChar).Value = RegLastnameTextBox.Text;
             command.Parameters.Add("@mail", MySqlDbType.VarChar).Value = RegMailTextBox.Text;
             command.Parameters.Add("@phone", MySqlDbType.UInt64).Value = RegPhoneTextBox.Text;
+            command.Parameters.AddWithValue("@ty", "0");
 
             db.openConnection();
 
             if(command.ExecuteNonQuery() == 1)
             {
+                db.closeConnection();
                 MessageBox.Show("Аккаунт был создан");
+                Form Form = Application.OpenForms[0];
+                if (Application.OpenForms["LoginForm"] != null)
+                {
+                    Form = Application.OpenForms["LoginForm"];
+                }
+                else
+                {
+                    Form = new LoginForm();
+                }
+                Form.Left = this.Left;
+                Form.Top = this.Top;
+                Form.Show();
+                this.Hide();
             }
             else
             {
-                MessageBox.Show("Не создан");
+                db.closeConnection();
+                MessageBox.Show("Аккаунт не удалось создать");
             }
 
-            db.closeConnection();
         }
 
         public Boolean isUserExists()
@@ -255,13 +341,50 @@ namespace Hotel
 
             if (table.Rows.Count > 0)
             {
-                MessageBox.Show("Такой логин уже есть");
+                ErrorProvider.SetError(RegLoginTextBox, "Такой логин уже существует! Придумайте новый");
                 return true;
             }
             else
             {
                 return false;
             }
+        }
+
+        private void RegToLogLabel_Click(object sender, EventArgs e)
+        {
+            Form Form = Application.OpenForms[0];
+            if (Application.OpenForms["LoginForm"] != null)
+            {
+                Form = Application.OpenForms["LoginForm"];
+            }
+            else
+            {
+                Form = new LoginForm();
+            }
+            Form.Left = this.Left;
+            Form.Top = this.Top;
+            Form.Show();
+            this.Hide();
+        }
+
+        private void RegToLogLabel_MouseEnter(object sender, EventArgs e)
+        {
+            RegToLogLabel.ForeColor = Color.FromArgb(171, 144, 84);
+        }
+
+        private void RegToLogLabel_MouseLeave(object sender, EventArgs e)
+        {
+            RegToLogLabel.ForeColor = Color.Black;
+        }
+
+        private void RegButton_MouseEnter(object sender, EventArgs e)
+        {
+            RegButton.ForeColor = Color.FromArgb(171, 144, 84);
+        }
+
+        private void RegButton_MouseLeave(object sender, EventArgs e)
+        {
+            RegButton.ForeColor = Color.Black;
         }
     }
 }

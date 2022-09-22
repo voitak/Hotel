@@ -28,7 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RegisterForm));
             this.RegPanel = new System.Windows.Forms.Panel();
+            this.RegToLogLabel = new System.Windows.Forms.Label();
             this.EyePictureBox = new System.Windows.Forms.PictureBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
@@ -43,7 +46,9 @@
             this.RegUserPicture = new System.Windows.Forms.PictureBox();
             this.RegTextLabel = new System.Windows.Forms.Label();
             this.ClosePanel = new System.Windows.Forms.Panel();
+            this.HotelPictureBox = new System.Windows.Forms.PictureBox();
             this.CloseLabel = new System.Windows.Forms.Label();
+            this.ErrorProvider = new System.Windows.Forms.ErrorProvider(this.components);
             this.RegPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.EyePictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
@@ -51,12 +56,15 @@
             ((System.ComponentModel.ISupportInitialize)(this.RegLockPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.RegUserPicture)).BeginInit();
             this.ClosePanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.HotelPictureBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ErrorProvider)).BeginInit();
             this.SuspendLayout();
             // 
             // RegPanel
             // 
             this.RegPanel.BackColor = System.Drawing.Color.White;
             this.RegPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.RegPanel.Controls.Add(this.RegToLogLabel);
             this.RegPanel.Controls.Add(this.EyePictureBox);
             this.RegPanel.Controls.Add(this.pictureBox2);
             this.RegPanel.Controls.Add(this.pictureBox1);
@@ -78,8 +86,24 @@
             this.RegPanel.Size = new System.Drawing.Size(400, 500);
             this.RegPanel.TabIndex = 1;
             // 
+            // RegToLogLabel
+            // 
+            this.RegToLogLabel.AutoSize = true;
+            this.RegToLogLabel.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.RegToLogLabel.Font = new System.Drawing.Font("Impact", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.RegToLogLabel.Location = new System.Drawing.Point(161, 460);
+            this.RegToLogLabel.Name = "RegToLogLabel";
+            this.RegToLogLabel.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.RegToLogLabel.Size = new System.Drawing.Size(100, 17);
+            this.RegToLogLabel.TabIndex = 14;
+            this.RegToLogLabel.Text = "Войти в аккаунт";
+            this.RegToLogLabel.Click += new System.EventHandler(this.RegToLogLabel_Click);
+            this.RegToLogLabel.MouseEnter += new System.EventHandler(this.RegToLogLabel_MouseEnter);
+            this.RegToLogLabel.MouseLeave += new System.EventHandler(this.RegToLogLabel_MouseLeave);
+            // 
             // EyePictureBox
             // 
+            this.EyePictureBox.Cursor = System.Windows.Forms.Cursors.Hand;
             this.EyePictureBox.Image = global::Hotel.Properties.Resources.eye;
             this.EyePictureBox.Location = new System.Drawing.Point(341, 331);
             this.EyePictureBox.Name = "EyePictureBox";
@@ -176,6 +200,8 @@
             this.RegButton.Text = "Зарегистрироваться";
             this.RegButton.UseVisualStyleBackColor = true;
             this.RegButton.Click += new System.EventHandler(this.RegButton_Click);
+            this.RegButton.MouseEnter += new System.EventHandler(this.RegButton_MouseEnter);
+            this.RegButton.MouseLeave += new System.EventHandler(this.RegButton_MouseLeave);
             // 
             // RegPasswordTextBox
             // 
@@ -227,7 +253,7 @@
             // RegTextLabel
             // 
             this.RegTextLabel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.RegTextLabel.Font = new System.Drawing.Font("Impact", 27.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.RegTextLabel.Font = new System.Drawing.Font("Century Gothic", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.RegTextLabel.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.RegTextLabel.Location = new System.Drawing.Point(0, 30);
             this.RegTextLabel.Name = "RegTextLabel";
@@ -240,6 +266,7 @@
             // 
             this.ClosePanel.BackColor = System.Drawing.Color.White;
             this.ClosePanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.ClosePanel.Controls.Add(this.HotelPictureBox);
             this.ClosePanel.Controls.Add(this.CloseLabel);
             this.ClosePanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.ClosePanel.Location = new System.Drawing.Point(0, 0);
@@ -248,6 +275,16 @@
             this.ClosePanel.TabIndex = 0;
             this.ClosePanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ClosePanel_MouseDown);
             this.ClosePanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.ClosePanel_MouseMove);
+            // 
+            // HotelPictureBox
+            // 
+            this.HotelPictureBox.Image = global::Hotel.Properties.Resources.bed;
+            this.HotelPictureBox.Location = new System.Drawing.Point(0, 0);
+            this.HotelPictureBox.Name = "HotelPictureBox";
+            this.HotelPictureBox.Size = new System.Drawing.Size(30, 30);
+            this.HotelPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.HotelPictureBox.TabIndex = 17;
+            this.HotelPictureBox.TabStop = false;
             // 
             // CloseLabel
             // 
@@ -263,6 +300,11 @@
             this.CloseLabel.MouseEnter += new System.EventHandler(this.CloseLabel_MouseEnter);
             this.CloseLabel.MouseLeave += new System.EventHandler(this.CloseLabel_MouseLeave);
             // 
+            // ErrorProvider
+            // 
+            this.ErrorProvider.BlinkStyle = System.Windows.Forms.ErrorBlinkStyle.NeverBlink;
+            this.ErrorProvider.ContainerControl = this;
+            // 
             // RegisterForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -270,7 +312,9 @@
             this.ClientSize = new System.Drawing.Size(400, 500);
             this.Controls.Add(this.RegPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "RegisterForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "RegisterForm";
             this.RegPanel.ResumeLayout(false);
             this.RegPanel.PerformLayout();
@@ -281,6 +325,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.RegUserPicture)).EndInit();
             this.ClosePanel.ResumeLayout(false);
             this.ClosePanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.HotelPictureBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ErrorProvider)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -303,5 +349,8 @@
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.PictureBox EyePictureBox;
+        private System.Windows.Forms.Label RegToLogLabel;
+        private System.Windows.Forms.PictureBox HotelPictureBox;
+        private System.Windows.Forms.ErrorProvider ErrorProvider;
     }
 }

@@ -16,6 +16,11 @@ namespace Hotel
         public LoginForm()
         {
             InitializeComponent();
+
+            this.ActiveControl = LoginTextLabel;
+
+            LoginTextLabel.ForeColor = Color.FromArgb(171, 144, 84);
+
             LoginTextBox.Text = "Логин";
             PasswordTextBox.Text = "Пароль";
 
@@ -27,7 +32,7 @@ namespace Hotel
 
         private void CloseLabel_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Application.Exit();
         }
 
         Point lastPoint;
@@ -56,29 +61,61 @@ namespace Hotel
 
         private void LoginButton_Click(object sender, EventArgs e)
         {
-            String loginUser = LoginTextBox.Text;
-            String passwordUser = PasswordTextBox.Text;
-
-            DB db = new DB();
-
-            DataTable table = new DataTable();
-
-            MySqlDataAdapter adapter = new MySqlDataAdapter();
-
-            MySqlCommand command = new MySqlCommand("SELECT * FROM `users` WHERE `login` = @uL AND `password` = @uP", db.getConnection());
-            command.Parameters.Add("@uL", MySqlDbType.VarChar).Value = loginUser;
-            command.Parameters.Add("@uP", MySqlDbType.VarChar).Value = passwordUser;
-
-            adapter.SelectCommand = command;
-            adapter.Fill(table);
-
-            if(table.Rows.Count > 0)
+            if (LoginTextBox.ForeColor == Color.Gray)
             {
-                MessageBox.Show("Yes");
+                ErrorProvider.SetError(LoginTextBox, "Введите логин!");
+                return;
             }
             else
             {
-                MessageBox.Show("No");
+                ErrorProvider.Clear();
+            }
+
+            if (PasswordTextBox.ForeColor == Color.Gray)
+            {
+                ErrorProvider.SetError(PasswordTextBox, "Введите пароль!");
+                return;
+            }
+            else
+            {
+                ErrorProvider.Clear();
+            }         
+                
+            String loginUser = LoginTextBox.Text;
+            String passwordUser = PasswordTextBox.Text;
+
+            //Ищем нужного пользователя в базе данных
+            DB db = new DB();
+
+            MySqlCommand command = new MySqlCommand("SELECT `id`,`type` FROM `users` WHERE `login` = @uL AND `password` = @uP", db.getConnection());
+            command.Parameters.Add("@uL", MySqlDbType.VarChar).Value = loginUser;
+            command.Parameters.Add("@uP", MySqlDbType.VarChar).Value = passwordUser;
+
+            db.openConnection();
+            MySqlDataReader reader = command.ExecuteReader();
+
+            if(reader.Read())
+            {
+                MainForm mainForm;
+                if (reader["type"].ToString() == "1")
+                {
+                    mainForm = new MainForm("admin");
+                }
+                else 
+                {
+                    mainForm = new MainForm(reader["id"].ToString());
+                }
+                reader.Dispose();
+                db.closeConnection();
+                mainForm.StartPosition = FormStartPosition.CenterScreen;
+                mainForm.Show();
+                this.Hide();
+            }
+            else
+            {
+                reader.Dispose();
+                db.closeConnection();
+                MessageBox.Show("Такого аккаунта не существует!");
             }
         }
 
@@ -133,5 +170,59 @@ namespace Hotel
 
         }
 
+        private void LogToRegLabel_Click(object sender, EventArgs e)
+        {
+            Form Form = Application.OpenForms[0];
+            if (Application.OpenForms["RegisterForm"] != null)
+            {
+                Form = Application.OpenForms["RegisterForm"];
+            }
+            else
+            {
+                Form = new RegisterForm();
+            }
+            Form.Left = this.Left;
+            Form.Top = this.Top;
+            Form.Show();
+            this.Hide();
+        }
+
+        private void LogToRegLabel_MouseEnter(object sender, EventArgs e)
+        {
+            LogToRegLabel.ForeColor = Color.FromArgb(171, 144, 84);
+        }
+
+        private void LogToRegLabel_MouseLeave(object sender, EventArgs e)
+        {
+            LogToRegLabel.ForeColor = Color.Black;
+        }
+
+        private void LoginButton_MouseEnter(object sender, EventArgs e)
+        {
+            LoginButton.ForeColor = Color.FromArgb(171, 144, 84);
+        }
+
+        private void LoginButton_MouseLeave(object sender, EventArgs e)
+        {
+            LoginButton.ForeColor = Color.Black;
+        }
+
+        private void GuestLabel_MouseEnter(object sender, EventArgs e)
+        {
+            GuestLabel.ForeColor = Color.FromArgb(171, 144, 84);
+        }
+
+        private void GuestLabel_MouseLeave(object sender, EventArgs e)
+        {
+            GuestLabel.ForeColor = Color.Black;
+        }
+
+        private void GuestLabel_MouseClick(object sender, MouseEventArgs e)
+        {
+            MainForm mainForm = new MainForm("guest");
+            mainForm.StartPosition = FormStartPosition.CenterScreen;
+            mainForm.Show();
+            this.Hide();
+        }
     }
 }
